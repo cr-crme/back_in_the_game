@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.XR.PXR;
 using UnityEngine;
 using UnityEngine.XR;
 
@@ -7,16 +8,27 @@ public class ControllersActions : MonoBehaviour
 {
 
     protected bool m_isSetup = false;
+    protected bool m_connectBodyTracker = false;
 
-    protected InputDevice head;
-    protected InputDevice leftHand;
-    protected InputDevice rightHand;
+    public InputDevice head { get; protected set; }
+    public InputDevice leftHand { get; protected set; }
+    public InputDevice rightHand { get; protected set; }
 
+    public BodyTrackerResult bodyTracker { get; protected set; } = new BodyTrackerResult();
 
     // Start is called before the first frame update
     void Start()
     {
-       SetupXRNodes();
+        SetupXRNodes();
+    }
+
+    private void OnApplicationFocus(bool focus)
+    {
+        if (focus)
+        {
+            // Set the full-body tracking mode
+            PXR_Input.SetSwiftMode(1);
+        }
     }
 
     // Update is called once per frame
@@ -28,24 +40,33 @@ public class ControllersActions : MonoBehaviour
             return; 
         }
 
-        // Get the position of the left hand
-        leftHand.TryGetFeatureValue(CommonUsages.devicePosition, out Vector3 position);
-        leftHand.TryGetFeatureValue(CommonUsages.deviceRotation, out Quaternion rotation);
-        Debug.Log(position);
-        Debug.Log(rotation.eulerAngles);
+        // // Get the position of the left hand
+        // leftHand.TryGetFeatureValue(CommonUsages.devicePosition, out Vector3 position);
+        // leftHand.TryGetFeatureValue(CommonUsages.deviceRotation, out Quaternion rotation);
+        // Debug.Log(position);
+        // Debug.Log(rotation.eulerAngles);
         
-        // Get the triggers button
-        rightHand.TryGetFeatureValue(CommonUsages.triggerButton, out bool isRightTriggered);
-        if (isRightTriggered)
-        {
-            Debug.Log("Right trigger button is pressed.");
-        }
+        //// Get the triggers button
+        //rightHand.TryGetFeatureValue(CommonUsages.triggerButton, out bool isRightTriggered);
+        //if (isRightTriggered)
+        //{
+        //    Debug.Log("Right trigger button is pressed.");
+        //}
 
-        leftHand.TryGetFeatureValue(CommonUsages.triggerButton, out bool isLeftTriggered);
-        if (isLeftTriggered)
+        //leftHand.TryGetFeatureValue(CommonUsages.triggerButton, out bool isLeftTriggered);
+        //if (isLeftTriggered)
+        //{
+        //   Debug.Log("Left trigger button is pressed.");
+        //}
+
+        // Get the position data of each body joint
+        if (m_connectBodyTracker)
         {
-            Debug.Log("Left trigger button is pressed.");
+            BodyTrackerResult _bodyTracker = new BodyTrackerResult(); 
+            PXR_Input.GetBodyTrackingPose(0, ref _bodyTracker);
+            bodyTracker = _bodyTracker;
         }
+        
 
     }
 
@@ -82,9 +103,26 @@ public class ControllersActions : MonoBehaviour
                 isRightHandSet = true;
             }
         }
-        if (isHeadSet && isLeftHandSet && isRightHandSet)
+        if (!isHeadSet || !isLeftHandSet || !isRightHandSet)
         {
-            m_isSetup = true;
+            return;
         }
+
+        if (m_connectBodyTracker)
+        {
+            // Get the number of motion trackers connected and their IDs.
+            PxrFitnessBandConnectState bandConnectState = new PxrFitnessBandConnectState();
+            PXR_Input.GetFitnessBandConnectState(ref bandConnectState);
+
+            // If not calibrated, launch the "PICO Motion Tracker" app for calibration
+            int calibrated = 0;
+            PXR_Input.GetFitnessBandCalibState(ref calibrated);
+            if (calibrated == 0)
+            {
+                PXR_Input.OpenFitnessBandCalibrationAPP();
+            }
+
+        }
+        m_isSetup = true;
     }
 }

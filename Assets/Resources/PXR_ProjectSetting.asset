@@ -23,8 +23,13 @@ MonoBehaviour:
   latelatching: 0
   latelatchingDebug: 0
   enableSubsampled: 0
-  bodyTracking: 0
+  bodyTracking: 1
   adaptiveResolution: 0
   stageMode: 0
   videoSeeThrough: 0
   spatialAnchor: 0
+  superResolution: 0
+  normalSharpening: 0
+  qualitySharpening: 0
+  fixedFoveatedSharpening: 0
+  selfAdaptiveSharpening: 0
