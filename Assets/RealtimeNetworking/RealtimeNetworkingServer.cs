@@ -41,13 +41,13 @@ namespace DevelopersHub.RealtimeNetworking.Server{
             List<string> ipAddresses = Tools.FindCurrentIPs();
             if (ipAddresses.Count > 1)
             {
-                _ipAddressText.text = "Trop d'adresses IP trouvées";
+                _ipAddressText.text = $"{ipAddresses[0]}:{RealtimeNetworking.port} (+{ipAddresses.Count - 1})";
             } else if (ipAddresses.Count == 0)
             {
                 _ipAddressText.text = "Aucune adresse IP trouvée";
             } else
             {
-                _ipAddressText.text = ipAddresses[0];
+                _ipAddressText.text = $"{ipAddresses[0]}:{RealtimeNetworking.port}";
             }
 
         }

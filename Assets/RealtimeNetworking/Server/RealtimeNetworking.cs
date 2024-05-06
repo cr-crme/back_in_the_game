@@ -10,7 +10,7 @@ namespace DevelopersHub.RealtimeNetworking.Server
     public class RealtimeNetworking
     {
 
-        public const int port = 5555;
+        public const int port = 8181;
         public const int maxUsers = 1000;
         public const bool udpActive = true;
 
