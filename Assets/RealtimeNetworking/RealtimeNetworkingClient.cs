@@ -14,7 +14,7 @@ namespace DevelopersHub.RealtimeNetworking.Client
 
         [SerializeField] private Canvas _connexionPanel;
         [SerializeField] private TMP_InputField _serverIpAddressInput;
-        [SerializeField] private int _serverPort = 5555;
+        [SerializeField] private int _serverPort = 8181;
         [SerializeField] private Button _connectButton;
         [SerializeField] private Button _cancelConnectButton;
 
@@ -28,6 +28,11 @@ namespace DevelopersHub.RealtimeNetworking.Client
             RealtimeNetworking.OnDisconnectedFromServer += OnConnexionLost;
             RealtimeNetworking.OnPacketReceived += OnPacketReceived;
 
+            var previousIp = PlayerPrefs.GetString("IpAddress");
+            if (previousIp != null)
+            {
+                _serverIpAddressInput.text = previousIp;
+            }
             ValidateIpAddress();
         }
 
@@ -147,8 +152,9 @@ namespace DevelopersHub.RealtimeNetworking.Client
             
             if (_isConnected)
             {
-                Debug.Log("Connected to server");
+                PlayerPrefs.SetString("IpAddress", _serverIpAddressInput.text);
                 _connexionPanel.gameObject.SetActive(false);
+                Debug.Log("Connected to server");
             }
         }
 

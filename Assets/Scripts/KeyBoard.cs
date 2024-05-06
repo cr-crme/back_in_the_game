@@ -24,7 +24,8 @@ public class KeyBoard : MonoBehaviour
     {
         if (key == "<")
         {
-            _inputField.text = "";
+            string current = _inputField.text;
+            _inputField.text = current.Remove(current.Length - 1, 1); 
         }
         else
         {
