@@ -5,12 +5,13 @@ namespace DevelopersHub.RealtimeNetworking.Server{
     using UnityEngine.UI;
     using DevelopersHub.RealtimeNetworking.Common;
     using DevelopersHub.RealtimeNetworking.Server;
+    using TMPro;
         
     public class RealtimeNetworkingServer : MonoBehaviour
     {
         [SerializeField] private List<Transform> _objectsToMove;
         [SerializeField] private CsvWriter _objectToSave;
-        [SerializeField] private Text _ipAddressText;
+        [SerializeField] private TMP_Text _ipAddressText;
 
         // Start is called before the first frame update
         void Start()

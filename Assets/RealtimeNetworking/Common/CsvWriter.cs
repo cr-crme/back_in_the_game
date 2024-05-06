@@ -4,13 +4,14 @@ using System.Numerics;
 using System.IO;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 namespace DevelopersHub.RealtimeNetworking.Common
 {
     public class CsvWriter : MonoBehaviour
     {
-        [SerializeField] private InputField _subjectNameInput;
-        [SerializeField] private InputField _trialNameInput;
+        [SerializeField] private TMP_InputField _subjectNameInput;
+        [SerializeField] private TMP_InputField _trialNameInput;
         [SerializeField] private Button _startButton;
         [SerializeField] private Button _stopButton;
 
