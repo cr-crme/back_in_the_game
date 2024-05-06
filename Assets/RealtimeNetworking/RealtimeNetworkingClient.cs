@@ -132,8 +132,9 @@ namespace DevelopersHub.RealtimeNetworking.Client
             {
                 Debug.Log("Trying to Connect...");
                 RealtimeNetworking.Connect(_serverIpAddressInput.text, _serverPort);
+                Debug.Log("Failed.");
                 // Pause for a second before trying to reconnect
-                yield return new WaitForSeconds(1);
+                yield return new WaitForSeconds(5);
             }
 
             _isConnecting = false;
