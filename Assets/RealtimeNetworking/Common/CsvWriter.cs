@@ -1,19 +1,22 @@
-using System.Collections.Generic;
-using System.Globalization;
-using System.Numerics;
-using System.IO;
-using UnityEngine;
-using UnityEngine.UI;
-using TMPro;
 
 namespace DevelopersHub.RealtimeNetworking.Common
 {
+    using System.Collections;
+    using System.Collections.Generic;
+    using System.Globalization;
+    using System.Numerics;
+    using System.IO;
+    using UnityEngine;
+    using UnityEngine.UI;
+    using TMPro;
+    
     public class CsvWriter : MonoBehaviour
     {
         [SerializeField] private TMP_InputField _subjectNameInput;
         [SerializeField] private TMP_InputField _trialNameInput;
         [SerializeField] private Button _startButton;
         [SerializeField] private Button _stopButton;
+        [SerializeField] private List<string> _objectsNames;
 
         string _filePath { get { return Path.Combine(Application.persistentDataPath, _subjectNameInput.text, $"{_trialNameInput.text}.csv"); } }
         private StreamWriter _fileWriter;
@@ -47,21 +50,24 @@ namespace DevelopersHub.RealtimeNetworking.Common
                 this.timestamp = timestamp;
             }
 
-            public static string Header { 
-                get {
-                    return "Frame,Pos.X,Pos.Y,Pos.Z,Rot.X,Rot.Y,Rot.Z";
+            static public string Header(List<string> objectsNames) { 
+                var stringOut = "Frame";
+                foreach (string name in objectsNames)
+                {
+                    stringOut += $",{name}_Pos.X,{name}_Pos.Y,{name}_Pos.Z,{name}_Rot.X,{name}_Rot.Y,{name}_Rot.Z";
                 }
+                return stringOut;
             }
 
             public override string ToString()
             {
-                var _out = $"{timestamp:F6}";
+                var stringOut = $"{timestamp:F6}";
                 foreach (var item in poses)
                 {
-                    _out += $",{item.position.X:F6},{item.position.Y:F6},{item.position.Z:F6}";
-                    _out += $",{item.rotation.X:F6},{item.rotation.Y:F6},{item.rotation.Z:F6}";
+                    stringOut += $",{item.position.X:F6},{item.position.Y:F6},{item.position.Z:F6}";
+                    stringOut += $",{item.rotation.X:F6},{item.rotation.Y:F6},{item.rotation.Z:F6}";
                 }
-                return _out;
+                return stringOut;
             }
         }
 
@@ -98,7 +104,7 @@ namespace DevelopersHub.RealtimeNetworking.Common
             Directory.CreateDirectory(Path.GetDirectoryName(_filePath));
 
             _fileWriter = new StreamWriter(_filePath);
-            _fileWriter.WriteLine(DataEntry.Header);
+            _fileWriter.WriteLine(DataEntry.Header(_objectsNames));
 
             _startButton.interactable = false;
             _startButton.gameObject.SetActive(false);
@@ -131,6 +137,10 @@ namespace DevelopersHub.RealtimeNetworking.Common
             if (!_isRecording)
             {
                 return;
+            }
+            if (data.poses.Count != _objectsNames.Count)
+            {
+                Debug.Log("Number of objects to save does not match the provided data.");
             }
 
             // Add data to the queue

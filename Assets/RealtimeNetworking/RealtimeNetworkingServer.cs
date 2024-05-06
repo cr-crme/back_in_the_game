@@ -23,7 +23,7 @@ namespace DevelopersHub.RealtimeNetworking.Server{
             RealtimeNetworking.OnClientConnected += ClientConnected;
             RealtimeNetworking.OnClientDisconnected += ClientDisconnected;
             RealtimeNetworking.OnPacketReceived += PacketReceived;
-            
+
             Debug.Log("Server started");
         }
 
