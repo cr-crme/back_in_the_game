@@ -14,7 +14,6 @@ namespace DevelopersHub.RealtimeNetworking.Client
 
         [SerializeField] private Canvas _connexionPanel;
         [SerializeField] private TMP_InputField _serverIpAddressInput;
-        [SerializeField] private int _serverPort = 8181;
         [SerializeField] private Button _connectButton;
         [SerializeField] private Button _cancelConnectButton;
 
@@ -84,7 +83,7 @@ namespace DevelopersHub.RealtimeNetworking.Client
                 return;
             }
 
-            string pattern = @"^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$";
+            string pattern = @"^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}:\d{1,5}$";
             Regex regex = new Regex(pattern);
             if (!regex.IsMatch(_serverIpAddressInput.text))
             {
@@ -133,10 +132,22 @@ namespace DevelopersHub.RealtimeNetworking.Client
             // Just make sure it is disconnected
             RealtimeNetworking.Disconnect();
 
+            string pattern = @"^(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}):(\d{1,5})$";
+            Regex regex = new Regex(pattern);
+            Match match = regex.Match(_serverIpAddressInput.text);
+            if (!match.Success)
+            {
+                yield break;
+            }
+            string ip = match.Groups[1].Value;
+            int port = int.Parse(match.Groups[2].Value);
+
             while (!_isConnected && _isConnecting)
             {
                 Debug.Log("Trying to Connect...");
-                RealtimeNetworking.Connect(_serverIpAddressInput.text, _serverPort);
+
+
+                RealtimeNetworking.Connect(ip, port);
                 Debug.Log("Failed.");
                 // Pause for a second before trying to reconnect
                 yield return new WaitForSeconds(5);
