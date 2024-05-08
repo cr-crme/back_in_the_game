@@ -125,6 +125,11 @@ namespace DevelopersHub.RealtimeNetworking.Client{
             RealtimeNetworking.Disconnect();
         }
 
+        public void OnQuit()
+        {
+            Application.Quit();
+        }
+
         public void TryConnecting()
         {
             _serverIpAddressInput.interactable = false;
