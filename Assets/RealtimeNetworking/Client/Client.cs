@@ -95,7 +95,14 @@ namespace DevelopersHub.RealtimeNetworking.Client
 
             private void ConnectCallback(IAsyncResult result)
             {
-                socket.EndConnect(result);
+                try
+                {
+                    socket.EndConnect(result);
+                } catch
+                {
+                    // Do nothing
+                }
+
                 if (!socket.Connected)
                 {
                     return;

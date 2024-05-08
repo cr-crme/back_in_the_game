@@ -18,8 +18,9 @@ namespace DevelopersHub.RealtimeNetworking.Client{
         [SerializeField] private Canvas _connexionPanel;
         [SerializeField] private Canvas _controlPanel;
 
-        private bool _isConnecting = false;
         private bool _isConnected = false;
+        private bool _isConnecting = false;
+        private bool _hasRequestedCancelConnexion = false;
         private bool _connexionLost = false;
 
         // Start is called before the first frame update
@@ -58,7 +59,7 @@ namespace DevelopersHub.RealtimeNetworking.Client{
 
         public void SendInt(int value)
         {
-            if (!_isConnected || _isConnecting)
+            if (!_isConnected)
             {
                 return;
             }
@@ -113,7 +114,6 @@ namespace DevelopersHub.RealtimeNetworking.Client{
 
         void OnConnexionLost()
         {
-            _isConnecting = false;
             _isConnected = false;
 
             _connexionLost = true;
@@ -132,25 +132,33 @@ namespace DevelopersHub.RealtimeNetworking.Client{
 
         public void TryConnecting()
         {
+            _cancelConnectButton.gameObject.SetActive(true);
             _serverIpAddressInput.interactable = false;
             _connectButton.gameObject.SetActive(false);
-            _cancelConnectButton.gameObject.SetActive(true);
 
-            _isConnecting = true;
+            _hasRequestedCancelConnexion = false;
             _isConnected = false;
 
             RealtimeNetworking.OnConnectingToServerResult += OnConnectionResult;
-
             StartCoroutine(TryConnectingCoroutine());
         }
 
         public void CancelTryConnecting()
         {
-            _isConnecting = false;
+            _hasRequestedCancelConnexion = true;
+
+            RealtimeNetworking.OnConnectingToServerResult -= OnConnectionResult;
+
+            _serverIpAddressInput.interactable = true;
+            _connectButton.gameObject.SetActive(true);
+            _cancelConnectButton.gameObject.SetActive(false);
         }
 
         System.Collections.IEnumerator TryConnectingCoroutine()
         {
+            _isConnecting = true;
+            _connectButton.interactable = false;
+
             // Just make sure it is disconnected
             RealtimeNetworking.Disconnect();
 
@@ -164,36 +172,47 @@ namespace DevelopersHub.RealtimeNetworking.Client{
             string ip = match.Groups[1].Value;
             int port = int.Parse(match.Groups[2].Value);
 
-            while (!_isConnected && _isConnecting)
+            bool first = true;
+            while (!_isConnected && !_hasRequestedCancelConnexion)
             {
-                Debug.Log("Trying to Connect...");
+                if (!first)
+                {
+                    Debug.Log("Failed.");
+                    // Pause for a second before trying to reconnect
+                    yield return new WaitForSeconds(5);
+                }
 
+                Debug.Log("Trying to Connect...");
                 RealtimeNetworking.Connect(ip, port);
-                Debug.Log("Failed.");
-                // Pause for a second before trying to reconnect
-                yield return new WaitForSeconds(1);
+                first = false;
             }
 
-            _isConnecting = false;
-
-            RealtimeNetworking.OnConnectingToServerResult -= OnConnectionResult;
-
-            _serverIpAddressInput.interactable = true;
-            _connectButton.gameObject.SetActive(true);
-            _cancelConnectButton.gameObject.SetActive(false);
+            // Call the cancel to reset the layouts even though it is already stopped
+            CancelTryConnecting();
 
             if (_isConnected)
             {
+                // If success
                 PlayerPrefs.SetString("IpAddress", _serverIpAddressInput.text);
                 _connexionPanel.gameObject.SetActive(false);
                 _controlPanel.gameObject.SetActive(true);
                 Debug.Log("Connected to server");
             }
+
+            _isConnecting = false;
+            _hasRequestedCancelConnexion = false;
+            _connectButton.interactable = true;
         }
 
         public void ValidateIpAddress()
         {
-            if (_serverIpAddressInput == null)
+            if (_isConnecting)
+            {
+                _connectButton.interactable = false;
+                return;
+            }
+
+                if (_serverIpAddressInput == null)
             {
                 _connectButton.interactable = false;
                 return;
