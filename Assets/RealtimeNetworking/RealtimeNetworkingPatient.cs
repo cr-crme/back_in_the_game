@@ -1,6 +1,7 @@
 
 namespace DevelopersHub.RealtimeNetworking.Server
 {
+    using System;
     using System.Collections.Generic;
     using DevelopersHub.RealtimeNetworking.Common;
     using UnityEngine;
@@ -13,7 +14,9 @@ namespace DevelopersHub.RealtimeNetworking.Server
 
         [SerializeField] private Canvas _connexionPanel;
         [SerializeField] private TMP_Text _ipAddressText;
-        
+
+        private bool _hasNewConnexion = false;
+        private bool _hasLostConnexion = false;
         private float _timeStamp = 0.0f; 
 
         // Start is called before the first frame update
@@ -58,15 +61,31 @@ namespace DevelopersHub.RealtimeNetworking.Server
             _timeStamp += Time.fixedDeltaTime;
         }
 
+        void Update()
+        {
+            if (_hasNewConnexion)
+            {
+                _connexionPanel.gameObject.SetActive(false);
+                _hasNewConnexion = false;
+            }    
+            if (_hasLostConnexion)
+            {
+                _connexionPanel.gameObject.SetActive(true);
+                _hasLostConnexion = false;
+            }
+        }
+
         void ClientConnected(int id, string ip)
         {
+            _hasNewConnexion = true;
             Debug.Log("Client connected: " + id + " " + ip);
         }
 
         void ClientDisconnected(int id, string ip)
         {
-            Debug.Log("Client disconnected: " + id + " " + ip);
+            _hasLostConnexion = true;
             _connexionPanel.gameObject.SetActive(true);
+            Debug.Log("Client disconnected: " + id + " " + ip);
         }
 
         void OnPacketReceived(int id, Packet packet)
