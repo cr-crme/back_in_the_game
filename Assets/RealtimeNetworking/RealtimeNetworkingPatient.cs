@@ -84,7 +84,6 @@ namespace DevelopersHub.RealtimeNetworking.Server
         void ClientDisconnected(int id, string ip)
         {
             _hasLostConnexion = true;
-            _connexionPanel.gameObject.SetActive(true);
             Debug.Log("Client disconnected: " + id + " " + ip);
         }
 
