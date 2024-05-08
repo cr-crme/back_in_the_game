@@ -20,6 +20,7 @@ namespace DevelopersHub.RealtimeNetworking.Client{
 
         private bool _isConnecting = false;
         private bool _isConnected = false;
+        private bool _connexionLost = false;
 
         // Start is called before the first frame update
         void Start()
@@ -40,6 +41,16 @@ namespace DevelopersHub.RealtimeNetworking.Client{
             RealtimeNetworking.Disconnect();
         }
 
+        void Update()
+        {
+            if (_connexionLost)
+            {
+                _connexionPanel.gameObject.SetActive(true);
+                _controlPanel.gameObject.SetActive(false);
+                _connexionLost=false;
+            }
+        }
+
         void FixedUpdate()
         {
             Threading.UpdateMain();
@@ -47,6 +58,11 @@ namespace DevelopersHub.RealtimeNetworking.Client{
 
         public void SendInt(int value)
         {
+            if (!_isConnected || _isConnecting)
+            {
+                return;
+            }
+
             try 
             {
                 var packet = new Packet();
@@ -100,7 +116,13 @@ namespace DevelopersHub.RealtimeNetworking.Client{
             _isConnecting = false;
             _isConnected = false;
 
-            _connexionPanel.gameObject.SetActive(true);
+            _connexionLost = true;
+            Debug.Log("Connexion lost");
+        }
+
+        void OnDestroy()
+        {
+            RealtimeNetworking.Disconnect();
         }
 
         public void TryConnecting()
@@ -141,11 +163,10 @@ namespace DevelopersHub.RealtimeNetworking.Client{
             {
                 Debug.Log("Trying to Connect...");
 
-
                 RealtimeNetworking.Connect(ip, port);
                 Debug.Log("Failed.");
                 // Pause for a second before trying to reconnect
-                yield return new WaitForSeconds(5);
+                yield return new WaitForSeconds(1);
             }
 
             _isConnecting = false;
@@ -160,6 +181,7 @@ namespace DevelopersHub.RealtimeNetworking.Client{
             {
                 PlayerPrefs.SetString("IpAddress", _serverIpAddressInput.text);
                 _connexionPanel.gameObject.SetActive(false);
+                _controlPanel.gameObject.SetActive(true);
                 Debug.Log("Connected to server");
             }
         }

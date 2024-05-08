@@ -123,6 +123,7 @@ namespace DevelopersHub.RealtimeNetworking.Client
                     if (length <= 0)
                     {
                         instance.Disconnect();
+                        RealtimeNetworking.instance._Disconnected();
                         return;
                     }
                     byte[] data = new byte[length];
@@ -233,6 +234,7 @@ namespace DevelopersHub.RealtimeNetworking.Client
                     if (data.Length < 4)
                     {
                         instance.Disconnect();
+                        RealtimeNetworking.instance._Disconnected();
                         return;
                     }
                     CheckData(data);
