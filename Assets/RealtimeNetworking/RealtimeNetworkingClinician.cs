@@ -1,31 +1,31 @@
-
-namespace DevelopersHub.RealtimeNetworking.Client
-{
+namespace DevelopersHub.RealtimeNetworking.Client{
     using System.Collections.Generic;
     using System.Text.RegularExpressions;
-    using DevelopersHub.RealtimeNetworking.Common;
     using UnityEngine;
     using UnityEngine.UI;
+    using DevelopersHub.RealtimeNetworking.Common;
     using TMPro;
-
-    public class RealtimeNetworkingClient : MonoBehaviour
-    {        
+        
+    public class RealtimeNetworkingClinician : MonoBehaviour
+    {
         [SerializeField] private List<Transform> _objectsToMove;
+        [SerializeField] private CsvWriter _objectToSave;
 
-        [SerializeField] private Canvas _connexionPanel;
         [SerializeField] private TMP_InputField _serverIpAddressInput;
         [SerializeField] private Button _connectButton;
         [SerializeField] private Button _cancelConnectButton;
 
+        [SerializeField] private Canvas _connexionPanel;
+        [SerializeField] private Canvas _controlPanel;
+
         private bool _isConnecting = false;
         private bool _isConnected = false;
-        private float _timeStamp = 0.0f; 
 
         // Start is called before the first frame update
         void Start()
         {
             RealtimeNetworking.OnDisconnectedFromServer += OnConnexionLost;
-            RealtimeNetworking.OnPacketReceived += OnPacketReceived;
+            RealtimeNetworking.OnPacketReceived += PacketReceived;
 
             var previousIp = PlayerPrefs.GetString("IpAddress");
             if (previousIp != null)
@@ -35,63 +35,59 @@ namespace DevelopersHub.RealtimeNetworking.Client
             ValidateIpAddress();
         }
 
-        // Update is called once per frame
-        void Update()
+        private void OnApplicationQuit()
         {
-            
+            RealtimeNetworking.Disconnect();
         }
 
         void FixedUpdate()
         {
             Threading.UpdateMain();
+        }
 
-            if (!_isConnected) return;
-
-            try
+        public void SendInt(int value)
+        {
+            try 
             {
                 var packet = new Packet();
-                packet.Write((int)PacketType.CsvWriterDataEntry);
-                packet.Write(_timeStamp);
-                foreach (var item in _objectsToMove)
-                {
-                    packet.Write(item.localPosition);
-                    packet.Write(item.localRotation.eulerAngles);
-                }
+                packet.Write((int)PacketType.Int); 
+                packet.Write(value);
                 Sender.TCP_Send(packet);
-
             } catch (System.Exception)
             {
                 Debug.Log("Connection lost");
                 OnConnexionLost();
             }
-
-            _timeStamp += Time.fixedDeltaTime;
         }
 
-        public void ValidateIpAddress()
+        void PacketReceived(Packet packet)
         {
-            if (_serverIpAddressInput == null)
+            var packetType = packet.ReadInt();
+            switch ((PacketType)packetType)
             {
-                _connectButton.interactable = false;
-                return;
-            }
+                case PacketType.CsvWriterDataEntry:
+                    var timestamp = packet.ReadFloat();
+                    var dataToWrite= new CsvWriter.DataEntry(timestamp);
 
-            _serverIpAddressInput.text = _serverIpAddressInput.text.Trim();
-            if (string.IsNullOrEmpty(_serverIpAddressInput.text))
-            {
-                _connectButton.interactable = false;
-                return;
-            }
+                    foreach (var item in _objectsToMove)
+                    {
+                        var position = packet.ReadVector3();
+                        var rotation = packet.ReadVector3();
+                    
+                        item.position = new Vector3(position.X, position.Y, position.Z);
+                        item.rotation = Quaternion.Euler(new Vector3(rotation.X, rotation.Y, rotation.Z));
 
-            string pattern = @"^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}:\d{1,5}$";
-            Regex regex = new Regex(pattern);
-            if (!regex.IsMatch(_serverIpAddressInput.text))
-            {
-                _connectButton.interactable = false;
-                return;
-            }
+                        dataToWrite.poses.Add(new CsvWriter.PoseVectors(position, rotation));
+                    }
 
-            _connectButton.interactable = true;
+                    _objectToSave.AddData(dataToWrite);
+
+                    break;
+
+                default:
+                    Debug.Log("Unknown packet type.");
+                    break;
+            }
         }
 
         void OnConnectionResult(bool success)
@@ -116,7 +112,6 @@ namespace DevelopersHub.RealtimeNetworking.Client
             _isConnecting = true;
             _isConnected = false;
 
-            _timeStamp = 0.0f;
             RealtimeNetworking.OnConnectingToServerResult += OnConnectionResult;
 
             StartCoroutine(TryConnectingCoroutine());
@@ -133,7 +128,7 @@ namespace DevelopersHub.RealtimeNetworking.Client
             RealtimeNetworking.Disconnect();
 
             string pattern = @"^(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}):(\d{1,5})$";
-            Regex regex = new Regex(pattern);
+            Regex regex = new(pattern);
             Match match = regex.Match(_serverIpAddressInput.text);
             if (!match.Success)
             {
@@ -160,7 +155,7 @@ namespace DevelopersHub.RealtimeNetworking.Client
             _serverIpAddressInput.interactable = true;
             _connectButton.gameObject.SetActive(true);
             _cancelConnectButton.gameObject.SetActive(false);
-            
+
             if (_isConnected)
             {
                 PlayerPrefs.SetString("IpAddress", _serverIpAddressInput.text);
@@ -169,15 +164,30 @@ namespace DevelopersHub.RealtimeNetworking.Client
             }
         }
 
-        void OnPacketReceived(Packet packet)
+        public void ValidateIpAddress()
         {
-            Debug.Log("Packet received: " + packet.ReadString());
-        }
+            if (_serverIpAddressInput == null)
+            {
+                _connectButton.interactable = false;
+                return;
+            }
 
-        
-        private void OnApplicationQuit()
-        {
-            RealtimeNetworking.Disconnect();
+            _serverIpAddressInput.text = _serverIpAddressInput.text.Trim();
+            if (string.IsNullOrEmpty(_serverIpAddressInput.text))
+            {
+                _connectButton.interactable = false;
+                return;
+            }
+
+            string pattern = @"^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}:\d{1,5}$";
+            Regex regex = new(pattern);
+            if (!regex.IsMatch(_serverIpAddressInput.text))
+            {
+                _connectButton.interactable = false;
+                return;
+            }
+
+            _connectButton.interactable = true;
         }
     }
 }
