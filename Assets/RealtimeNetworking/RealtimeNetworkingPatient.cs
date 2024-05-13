@@ -16,8 +16,8 @@ namespace DevelopersHub.RealtimeNetworking.Server
         [SerializeField] private Canvas _connexionPanel;
         [SerializeField] private TMP_Text _ipAddressText;
 
-        private bool _hasNewConnexion = false;
-        private bool _hasLostConnexion = false;
+        private int _nbActiveConnexion = 0;
+        private bool _connexionStatusChanged = false;
         private float _timeStamp = 0.0f; 
 
         // Start is called before the first frame update
@@ -64,28 +64,23 @@ namespace DevelopersHub.RealtimeNetworking.Server
 
         void Update()
         {
-            if (_hasNewConnexion)
+            if (_connexionStatusChanged)
             {
-                _connexionPanel.gameObject.SetActive(false);
-                _hasNewConnexion = false;
-            }    
-            if (_hasLostConnexion)
-            {
-                _connexionPanel.gameObject.SetActive(true);
-                _hasLostConnexion = false;
+                _connexionPanel.gameObject.SetActive(_nbActiveConnexion == 0);
+                _connexionStatusChanged = false;
             }
         }
 
         void ClientConnected(int id, string ip)
         {
-            _hasNewConnexion = true;
+            _connexionStatusChanged = true;
             SendCurrentScene();
             Debug.Log("Client connected: " + id + " " + ip);
         }
 
         void ClientDisconnected(int id, string ip)
         {
-            _hasLostConnexion = true;
+            _connexionStatusChanged = true;
             Debug.Log("Client disconnected: " + id + " " + ip);
         }
 
