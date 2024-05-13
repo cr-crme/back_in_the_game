@@ -79,6 +79,7 @@ namespace DevelopersHub.RealtimeNetworking.Server
         void ClientConnected(int id, string ip)
         {
             _hasNewConnexion = true;
+            SendCurrentScene();
             Debug.Log("Client connected: " + id + " " + ip);
         }
 
@@ -88,6 +89,14 @@ namespace DevelopersHub.RealtimeNetworking.Server
             Debug.Log("Client disconnected: " + id + " " + ip);
         }
 
+        void SendCurrentScene()
+        {
+            var packet = new Packet();
+            packet.Write((int)PacketType.ChangeScene);
+            packet.Write(_sceneManager.current);
+            Sender.TCP_SentToAll(packet);
+        }
+
         void OnPacketReceived(int id, Packet packet)
         {
             var packetType = packet.ReadInt();
@@ -95,13 +104,10 @@ namespace DevelopersHub.RealtimeNetworking.Server
             {
                 case PacketType.ChangeScene:
                     // Change current scene and return the new scene to client
-                    var newScence = packet.ReadInt();
-                    _sceneManager.ChangeScene(newScence);
+                    var newScene = packet.ReadInt();
+                    _sceneManager.ChangeScene(newScene);
 
-                    var response = new Packet();
-                    packet.Write((int)PacketType.ChangeScene);
-                    packet.Write(_sceneManager.current);
-                    Sender.TCP_SentToAll(packet);
+                    SendCurrentScene();
                     break;
 
                 default:

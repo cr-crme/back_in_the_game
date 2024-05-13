@@ -15,9 +15,9 @@ public class SceneManager : MonoBehaviour
         ActivateScene();
     }
 
-    public void ChangeScene(int newScence)
+    public void ChangeScene(int newScene)
     { 
-        current = newScence;
+        current = newScene;
         ActivateScene();
     }
 
