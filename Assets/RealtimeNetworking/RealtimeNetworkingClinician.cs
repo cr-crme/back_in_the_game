@@ -8,6 +8,8 @@ namespace DevelopersHub.RealtimeNetworking.Client{
         
     public class RealtimeNetworkingClinician : MonoBehaviour
     {
+        [SerializeField] private SceneManager _sceneManager;
+        [SerializeField] private TMP_Dropdown _sceneDropdown;
         [SerializeField] private List<Transform> _objectsToMove;
         [SerializeField] private CsvWriter _objectToSave;
 
@@ -57,6 +59,27 @@ namespace DevelopersHub.RealtimeNetworking.Client{
             Threading.UpdateMain();
         }
 
+        public void ChangeSceneRequest()
+        {
+            if (!_isConnected)
+            {
+                return;
+            }
+
+            try
+            {
+                var packet = new Packet();
+                packet.Write((int)PacketType.ChangeScene);
+                packet.Write(_sceneDropdown.value);
+                Sender.TCP_Send(packet);
+            }
+            catch (System.Exception)
+            {
+                Debug.Log("Connection lost");
+                OnConnexionLost();
+            }
+        }
+
         public void SendInt(int value)
         {
             if (!_isConnected)
@@ -82,6 +105,12 @@ namespace DevelopersHub.RealtimeNetworking.Client{
             var packetType = packet.ReadInt();
             switch ((PacketType)packetType)
             {
+                case PacketType.ChangeScene:
+                    // Change current scene and return the new scene to client
+                    var newScene = packet.ReadInt();
+                    _sceneManager.ChangeScene(newScene);
+                    break;
+
                 case PacketType.CsvWriterDataEntry:
                     var timestamp = packet.ReadFloat();
                     var dataToWrite= new CsvWriter.DataEntry(timestamp);
@@ -184,6 +213,7 @@ namespace DevelopersHub.RealtimeNetworking.Client{
 
                 Debug.Log("Trying to Connect...");
                 RealtimeNetworking.Connect(ip, port);
+                yield return 0;
                 first = false;
             }
 
