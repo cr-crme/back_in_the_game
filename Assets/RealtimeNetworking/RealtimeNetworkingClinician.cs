@@ -28,6 +28,8 @@ namespace DevelopersHub.RealtimeNetworking.Client{
         // Start is called before the first frame update
         void Start()
         {
+            Screen.sleepTimeout = SleepTimeout.NeverSleep;
+
             RealtimeNetworking.OnDisconnectedFromServer += OnConnexionLost;
             RealtimeNetworking.OnPacketReceived += PacketReceived;
 
