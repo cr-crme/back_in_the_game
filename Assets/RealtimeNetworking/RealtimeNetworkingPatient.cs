@@ -73,16 +73,23 @@ namespace DevelopersHub.RealtimeNetworking.Server
 
         void ClientConnected(int id, string ip)
         {
-            _nbActiveConnexion++;
             _connexionStatusChanged = true;
+            _nbActiveConnexion++;
+
             SendCurrentScene();
+            
             Debug.Log("Client connected: " + id + " " + ip);
         }
 
         void ClientDisconnected(int id, string ip)
         {
-            _nbActiveConnexion--;
             _connexionStatusChanged = true;
+            _nbActiveConnexion--;
+            if (_nbActiveConnexion < 0)
+            {
+                _nbActiveConnexion = 0;
+            }
+
             Debug.Log("Client disconnected: " + id + " " + ip);
         }
 
