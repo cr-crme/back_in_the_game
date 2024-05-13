@@ -10,6 +10,7 @@ namespace DevelopersHub.RealtimeNetworking.Server
 
     public class RealtimeNetworkingPatient : MonoBehaviour
     {
+        [SerializeField] private SceneManager _sceneManager;
         [SerializeField] private List<Transform> _objectsToMove;
 
         [SerializeField] private Canvas _connexionPanel;
@@ -89,7 +90,24 @@ namespace DevelopersHub.RealtimeNetworking.Server
 
         void OnPacketReceived(int id, Packet packet)
         {
-            Debug.Log("Packet received: " + packet.ReadString());
+            var packetType = packet.ReadInt();
+            switch ((PacketType)packetType)
+            {
+                case PacketType.ChangeScene:
+                    // Change current scene and return the new scene to client
+                    var newScence = packet.ReadInt();
+                    _sceneManager.ChangeScene(newScence);
+
+                    var response = new Packet();
+                    packet.Write((int)PacketType.ChangeScene);
+                    packet.Write(_sceneManager.current);
+                    Sender.TCP_SentToAll(packet);
+                    break;
+
+                default:
+                    Debug.Log("Unknown packet type.");
+                    break;
+            }
         }
 
         void ShowIpAddress()
