@@ -72,3 +72,7 @@ crashlytics-build.properties
 /[Aa]ssets/[Ss]treamingAssets/aa/*
 
 *.log
+
+Assets/Midwest_Park/
+
+Assets/MinimalistBedroom/
