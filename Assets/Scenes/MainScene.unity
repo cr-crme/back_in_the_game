@@ -301,7 +301,7 @@ Transform:
   - {fileID: 1129418222}
   - {fileID: 500262764}
   m_Father: {fileID: 173329832}
-  m_RootOrder: 3
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: -90, z: 0}
 --- !u!1001 &58190799
 PrefabInstance:
@@ -1759,7 +1759,6 @@ Transform:
   m_Children:
   - {fileID: 1425444526}
   - {fileID: 2050326808}
-  - {fileID: 1090133043}
   - {fileID: 54916528}
   - {fileID: 495836470}
   m_Father: {fileID: 0}
@@ -1780,7 +1779,6 @@ MonoBehaviour:
   _scenes:
   - {fileID: 1425444525}
   - {fileID: 2050326807}
-  - {fileID: 1090133042}
   - {fileID: 54916527}
   - {fileID: 495836469}
 --- !u!1 &176952629
@@ -4997,7 +4995,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 173329832}
-  m_RootOrder: 4
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &495836471
 MonoBehaviour:
@@ -5839,6 +5837,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4b5e0617227fa4743be84f23d9e5cb42, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  openandclose1: {fileID: 0}
+  open: 0
+  Player: {fileID: 0}
 --- !u!95 &541974310
 Animator:
   serializedVersion: 5
@@ -10796,37 +10797,6 @@ Light:
   m_UseViewFrustumForShadowCasterCull: 1
   m_ShadowRadius: 0
   m_ShadowAngle: 0
---- !u!1 &1090133042
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1090133043}
-  m_Layer: 0
-  m_Name: BasketballStadium
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 0
---- !u!4 &1090133043
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1090133042}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 173329832}
-  m_RootOrder: 2
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1090723453
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -18009,8 +17979,6 @@ MonoBehaviour:
     - m_Text: Le bureau
       m_Image: {fileID: 0}
     - m_Text: Soccer
-      m_Image: {fileID: 0}
-    - m_Text: Basketball
       m_Image: {fileID: 0}
     - m_Text: "H\xF4pital"
       m_Image: {fileID: 0}
