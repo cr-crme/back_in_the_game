@@ -1,19 +1,21 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using SimpleFileBrowser;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEditor;
-
+using DevelopersHub.RealtimeNetworking.Common;
 
 [System.Serializable]
 public class ExperimentRound
 {
     public int scene = -1;
     public int task = -1;
+
     public bool showYFrame = true;
+
+    public bool mustRecord = false;
+    public double recordingTime = -1.0;
 }
 
 [System.Serializable]
@@ -26,14 +28,14 @@ public class Experiment
 
     public string IsValid()
     {
-        if (experimentName == null || experimentName.Length == 0) return "Experiment name is missing";
-        if (sceneNames == null) return "Scene names are missing";
-        if (taskNames == null) return "Task names are missing";
+        if (experimentName == null || experimentName.Length == 0) return "Nom de l'expérience manquant";
+        if (sceneNames == null) return "Noms des scènes manquants";
+        if (taskNames == null) return "Noms des tâches manquants";
 
         foreach (var round in rounds)
         {
-            if (round.scene < 0 || round.scene >= sceneNames.Count) return "Invalid scene index in round";
-            if (round.task < 0 || round.task >= taskNames.Count) return "Invalid task index in round";
+            if (round.scene < 0 || round.scene >= sceneNames.Count) return "Index d'une scène invalide";
+            if (round.task < 0 || round.task >= taskNames.Count) return "Index d'une tâche invalide";
         }        
 
         return null;
@@ -42,7 +44,7 @@ public class Experiment
     public string RoundToString(int index)
     {
         var round = rounds[index];
-        return $"{taskNames[round.task]} in {sceneNames[round.scene]}";
+        return $"{taskNames[round.task]} dans {sceneNames[round.scene]}";
     }
 
     public string FileName(int index)
@@ -78,13 +80,15 @@ public class ExperimentLoader : MonoBehaviour
 {
     int _currentRound = -1;
     Experiment _experiment;
-    [SerializeField] private Button _previousButton;
-    [SerializeField] private Text _saveNameText;
-    [SerializeField] private Button _nextButton;
-    [SerializeField] private Text _errorText;
+    [SerializeField] Button _previousButton;
+    [SerializeField] Text _saveNameText;
+    [SerializeField] Button _nextButton;
+    [SerializeField] Text _errorText;
+
+    [SerializeField] CsvWriter _csvWriter;
 
     public delegate void OnRoundChangedDelegate(int roundIndex, ExperimentRound round, string filename);
-    private List<OnRoundChangedDelegate> _onRoundChanged = new List<OnRoundChangedDelegate>();
+    List<OnRoundChangedDelegate> _onRoundChanged = new List<OnRoundChangedDelegate>();
 
     public void AddListener(OnRoundChangedDelegate listener)
     {
@@ -100,9 +104,11 @@ public class ExperimentLoader : MonoBehaviour
     void Start()
     {
         _previousButton.interactable = false;
-        _saveNameText.text = "No file selected";
+        _saveNameText.text = "Aucun fichier s�lectionn�";
         _nextButton.interactable = false;
         _errorText.text = "";
+
+        _csvWriter.AddListener(HasRecorded);
     }
     
     public void GetFileDialog()
@@ -131,7 +137,7 @@ public class ExperimentLoader : MonoBehaviour
         } else {
             // Reset to initial state
             _previousButton.interactable = false;
-            _saveNameText.text = "No file selected";
+            _saveNameText.text = "Aucun fichier s�lectionn�";
             _nextButton.interactable = false;
             _errorText.text = error;
             _experiment = null;
@@ -147,18 +153,24 @@ public class ExperimentLoader : MonoBehaviour
         string trial = $"({_currentRound + 1}/{_experiment.rounds.Count})";
 
         if (_currentRound < 0) {
-            _saveNameText.text = $"Experiment starting {trial}";
+            _saveNameText.text = $"D�but {trial}";
             _previousButton.interactable = false;
         }
         if (_currentRound >= _experiment.rounds.Count) {
-            _saveNameText.text = $"Experiment complete";
+            _saveNameText.text = $"Fin";
             _nextButton.interactable = false;
         }
         if (_currentRound >= 0 && _currentRound < _experiment.rounds.Count) {
             _saveNameText.text = $"{_experiment.RoundToString(_currentRound)} {trial}";
+            if (_experiment.rounds[_currentRound].mustRecord) _nextButton.interactable = false;
         }
 
         NotifyListeners();
+    }
+
+    void HasRecorded()
+    {
+        _nextButton.interactable = true;
     }
 
     void NotifyListeners()

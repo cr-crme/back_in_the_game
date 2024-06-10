@@ -1,10 +1,8 @@
 
 namespace DevelopersHub.RealtimeNetworking.Common
 {
-    using System.Collections;
     using System.Collections.Generic;
     using System.Globalization;
-    using System.Numerics;
     using System.IO;
     using UnityEngine;
     using UnityEngine.UI;
@@ -17,6 +15,30 @@ namespace DevelopersHub.RealtimeNetworking.Common
         [SerializeField] private Button _startButton;
         [SerializeField] private Button _stopButton;
         [SerializeField] private List<string> _objectsNames;
+
+        public delegate void OnRecordingStartedDelegate(string filepath);
+        private List<OnRecordingStartedDelegate> _onRecordingStarted = new List<OnRecordingStartedDelegate>();
+        public delegate void OnRecordingStopedDelegate();
+        private List<OnRecordingStopedDelegate> _onRecordingStopped = new List<OnRecordingStopedDelegate>();
+
+        public void AddListener(OnRecordingStartedDelegate listener)
+        {
+            _onRecordingStarted.Add(listener);
+        }
+
+        public void RemoveListener(OnRecordingStartedDelegate listener)
+        {
+            _onRecordingStarted.Remove(listener);
+        }
+        public void AddListener(OnRecordingStopedDelegate listener)
+        {
+            _onRecordingStopped.Add(listener);
+        }
+
+        public void RemoveListener(OnRecordingStopedDelegate listener)
+        {
+            _onRecordingStopped.Remove(listener);
+        }
 
         string _filePath { get { return Path.Combine(Application.persistentDataPath, _subjectNameInput.text, $"{_trialNameInput.text}.csv"); } }
         private StreamWriter _fileWriter;
@@ -112,6 +134,11 @@ namespace DevelopersHub.RealtimeNetworking.Common
             _stopButton.gameObject.SetActive(true);
 
             _isRecording = true;
+
+            foreach (var listener in _onRecordingStarted)
+            {
+                listener(_filePath);
+            }
         }
 
         public void StopRecording()
@@ -130,6 +157,11 @@ namespace DevelopersHub.RealtimeNetworking.Common
             ValidateDataPath();
 
             _isRecording = false;
+
+            foreach (var listener in _onRecordingStopped)
+            {
+                listener();
+            }
         }
 
         public void AddData(DataEntry data)
