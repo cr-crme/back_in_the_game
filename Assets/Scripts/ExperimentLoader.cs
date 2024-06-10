@@ -12,6 +12,7 @@ public class ExperimentRound
 {
     public int scene = -1;
     public int task = -1;
+    public bool showYFrame = true;
 }
 
 [System.Serializable]

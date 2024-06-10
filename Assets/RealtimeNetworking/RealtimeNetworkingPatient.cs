@@ -108,7 +108,7 @@ namespace DevelopersHub.RealtimeNetworking.Server
         {
             var packet = new Packet();
             packet.Write((int)PacketType.ShowYFrame);
-            packet.Write(_yFrame.active);
+            packet.Write(_yFrame.activeSelf);
             Sender.TCP_SentToAll(packet);
         }
 

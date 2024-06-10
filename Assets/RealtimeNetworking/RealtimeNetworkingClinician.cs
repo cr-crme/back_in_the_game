@@ -12,6 +12,8 @@ namespace DevelopersHub.RealtimeNetworking.Client{
         [SerializeField] TMP_Dropdown _sceneDropdown;
         [SerializeField] List<Transform> _objectsToMove;
         [SerializeField] CsvWriter _objectToSave;
+
+        [SerializeField] Toggle _yFrameToggle;
         [SerializeField] GameObject _yFrame;
 
         [SerializeField] TMP_InputField _serverIpAddressInput;
@@ -88,6 +90,27 @@ namespace DevelopersHub.RealtimeNetworking.Client{
             }
         }
 
+        public void ToggleYFrameRequest()
+        {
+            if (!_isConnected)
+            {
+                return;
+            }
+
+            try
+            {
+                var packet = new Packet();
+                packet.Write((int)PacketType.ShowYFrame);
+                packet.Write(_yFrameToggle.isOn);
+                Sender.TCP_Send(packet);
+            }
+            catch (System.Exception)
+            {
+                Debug.Log("Connection lost");
+                OnConnexionLost();
+            }
+        }
+
         public void SendInt(int value)
         {
             if (!_isConnected)
@@ -116,6 +139,7 @@ namespace DevelopersHub.RealtimeNetworking.Client{
                 case PacketType.ChangeScene:
                     // Change current scene and return the new scene to client
                     var newScene = packet.ReadInt();
+                    _sceneDropdown.value = newScene;
                     _sceneManager.ChangeScene(newScene);
                     break;
 
@@ -124,6 +148,7 @@ namespace DevelopersHub.RealtimeNetworking.Client{
                     // Change current scene and return the new scene to client
                     var show = packet.ReadBool();
                     _yFrame.SetActive(show);
+                    _yFrameToggle.isOn = show;
                     break;
 
                 case PacketType.CsvWriterDataEntry:
@@ -288,20 +313,26 @@ namespace DevelopersHub.RealtimeNetworking.Client{
             {
                 _automaticEnvironmentPanel.gameObject.SetActive(true);
                 _sceneDropdown.interactable = false;
+                _yFrameToggle.interactable = false;
                 _experimentLoader.AddListener(OnExperimentRoundChanged);
             } else
             {
                 _experimentLoader.RemoveListener(OnExperimentRoundChanged);
+                _yFrameToggle.interactable = true;
                 _sceneDropdown.interactable = true;
                 _automaticEnvironmentPanel.gameObject.SetActive(false);
             }
         }
 
+
         void OnExperimentRoundChanged(int roundIndex, ExperimentRound round, string filename) {
             // The main fallback if anything goes wrong is the waiting room (0)
             _sceneDropdown.value = round != null && (round.scene >= 0 || round.scene < _sceneDropdown.options.Count) ? round.scene : 0;
             ChangeSceneRequest();
-    
+
+            _yFrameToggle.isOn = round != null && round.showYFrame;
+            ToggleYFrameRequest();
+
             _savepathInputField.text = filename == null ? "": filename;
         }
     }
