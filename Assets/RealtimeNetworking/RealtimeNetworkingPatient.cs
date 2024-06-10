@@ -78,6 +78,7 @@ namespace DevelopersHub.RealtimeNetworking.Server
             _connexionStatusChanged = true;
             _nbActiveConnexion++;
 
+            SendCurrentVersion();
             SendCurrentScene();
             SendShowYFrame();
 
@@ -95,6 +96,14 @@ namespace DevelopersHub.RealtimeNetworking.Server
             }
 
             Debug.Log("Client disconnected: " + id + " " + ip);
+        }
+
+        void SendCurrentVersion()
+        {
+            var packet = new Packet();
+            packet.Write((int)PacketType.Version);
+            packet.Write(PacketType.protocolVersion);
+            Sender.TCP_SentToAll(packet);
         }
 
         void SendCurrentScene()

@@ -1,9 +1,12 @@
 namespace DevelopersHub.RealtimeNetworking.Common
 {
+    static public string protocolVersion = "1.0.0";
+
     public enum PacketType {
-        CsvWriterDataEntry = 1,
-        Int = 2,
-        ChangeScene = 3,
-        ShowYFrame = 4,
+        Version = 0,
+        CsvWriterDataEntry = 2,
+        Int = 3,
+        ChangeScene = 4,
+        ShowYFrame = 5,
     }
 }
