@@ -102,7 +102,7 @@ namespace DevelopersHub.RealtimeNetworking.Server
         {
             var packet = new Packet();
             packet.Write((int)PacketType.Version);
-            packet.Write(PacketType.protocolVersion);
+            packet.Write(Protocol.version);
             Sender.TCP_SentToAll(packet);
         }
 

@@ -1,6 +1,10 @@
 namespace DevelopersHub.RealtimeNetworking.Common
 {
-    static public string protocolVersion = "1.0.0";
+    public static class Protocol
+    {
+        public const string version = "1.0.0";
+
+    }
 
     public enum PacketType {
         Version = 0,
