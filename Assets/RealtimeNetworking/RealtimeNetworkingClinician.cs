@@ -28,10 +28,13 @@ namespace DevelopersHub.RealtimeNetworking.Client{
         [SerializeField] ExperimentLoader _experimentLoader;
         [SerializeField] TMP_InputField _savepathInputField;
 
+        [SerializeField] TMP_Text _connexionErrorText;
+
         bool _isConnected = false;
         bool _isConnecting = false;
         bool _hasRequestedCancelConnexion = false;
         bool _connexionLost = false;
+        bool _isProtocolVersionValidated = false;
 
         // Start is called before the first frame update
         void Start()
@@ -40,6 +43,8 @@ namespace DevelopersHub.RealtimeNetworking.Client{
 
             RealtimeNetworking.OnDisconnectedFromServer += OnConnexionLost;
             RealtimeNetworking.OnPacketReceived += PacketReceived;
+
+            _connexionErrorText.gameObject.SetActive(false);
 
             var previousIp = PlayerPrefs.GetString("IpAddress");
             if (previousIp != null)
@@ -136,6 +141,22 @@ namespace DevelopersHub.RealtimeNetworking.Client{
             var packetType = packet.ReadInt();
             switch ((PacketType)packetType)
             {
+                case PacketType.Version:
+                    // Change current scene and return the new scene to client
+                    var version = packet.ReadString();
+                    if (version == null || version != Protocol.version)
+                    {
+                        _connexionErrorText.gameObject.SetActive(true);
+                        _connexionErrorText.text = "Mettre à jour le serveur";
+                        _isProtocolVersionValidated = false;
+                        RealtimeNetworking.Disconnect();
+                    }
+                    else
+                    {
+                        _isProtocolVersionValidated = true;
+                    }
+                    break;                           
+
                 case PacketType.ChangeScene:
                     // Change current scene and return the new scene to client
                     var newScene = packet.ReadInt();
@@ -260,7 +281,7 @@ namespace DevelopersHub.RealtimeNetworking.Client{
             // Call the cancel to reset the layouts even though it is already stopped
             CancelTryConnecting();
 
-            if (_isConnected)
+            if (_isConnected && _isProtocolVersionValidated)
             {
                 // If success
                 PlayerPrefs.SetString("IpAddress", _serverIpAddressInput.text);
