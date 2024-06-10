@@ -13,6 +13,7 @@ namespace DevelopersHub.RealtimeNetworking.Server
         [SerializeField] SceneManager _sceneManager;
         [SerializeField] List<Transform> _objectsToMove;
         [SerializeField] GameObject _yFrame;
+        bool _yFrameIsActive = true;
 
         [SerializeField] Canvas _connexionPanel;
         [SerializeField] TMP_Text _ipAddressText;
@@ -108,7 +109,7 @@ namespace DevelopersHub.RealtimeNetworking.Server
         {
             var packet = new Packet();
             packet.Write((int)PacketType.ShowYFrame);
-            packet.Write(_yFrame.activeSelf);
+            packet.Write(_yFrameIsActive);
             Sender.TCP_SentToAll(packet);
         }
 
@@ -127,8 +128,8 @@ namespace DevelopersHub.RealtimeNetworking.Server
 
                 case PacketType.ShowYFrame:
                     // Change current scene and return the new scene to client
-                    var show = packet.ReadBool();
-                    _yFrame.SetActive(show);
+                    _yFrameIsActive = packet.ReadBool();
+                    _yFrame.SetActive(_yFrameIsActive);
 
                     SendShowYFrame();
                     break;
@@ -148,7 +149,7 @@ namespace DevelopersHub.RealtimeNetworking.Server
             }
             else if (ipAddresses.Count == 0)
             {
-                _ipAddressText.text = "Aucune adresse IP trouvée";
+                _ipAddressText.text = "Aucune adresse IP trouvï¿½e";
             }
             else
             {

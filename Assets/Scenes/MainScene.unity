@@ -6311,7 +6311,7 @@ MonoBehaviour:
   - {fileID: 149439825}
   - {fileID: 918937778}
   - {fileID: 797325923}
-  _yFrame: {fileID: 0}
+  _yFrame: {fileID: 1695511545}
   _connexionPanel: {fileID: 92901624}
   _ipAddressText: {fileID: 303167070}
 --- !u!1 &584189297
