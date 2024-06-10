@@ -10,15 +10,16 @@ namespace DevelopersHub.RealtimeNetworking.Server
 
     public class RealtimeNetworkingPatient : MonoBehaviour
     {
-        [SerializeField] private SceneManager _sceneManager;
-        [SerializeField] private List<Transform> _objectsToMove;
+        [SerializeField] SceneManager _sceneManager;
+        [SerializeField] List<Transform> _objectsToMove;
+        [SerializeField] GameObject _yFrame;
 
-        [SerializeField] private Canvas _connexionPanel;
-        [SerializeField] private TMP_Text _ipAddressText;
+        [SerializeField] Canvas _connexionPanel;
+        [SerializeField] TMP_Text _ipAddressText;
 
-        private int _nbActiveConnexion = 0;
-        private bool _connexionStatusChanged = false;
-        private float _timeStamp = 0.0f; 
+        int _nbActiveConnexion = 0;
+        bool _connexionStatusChanged = false;
+        float _timeStamp = 0.0f; 
 
         // Start is called before the first frame update
         void Start()
@@ -77,7 +78,9 @@ namespace DevelopersHub.RealtimeNetworking.Server
             _nbActiveConnexion++;
 
             SendCurrentScene();
-            
+            SendShowYFrame();
+
+
             Debug.Log("Client connected: " + id + " " + ip);
         }
 
@@ -101,6 +104,14 @@ namespace DevelopersHub.RealtimeNetworking.Server
             Sender.TCP_SentToAll(packet);
         }
 
+        void SendShowYFrame()
+        {
+            var packet = new Packet();
+            packet.Write((int)PacketType.ShowYFrame);
+            packet.Write(_yFrame.active);
+            Sender.TCP_SentToAll(packet);
+        }
+
         void OnPacketReceived(int id, Packet packet)
         {
             var packetType = packet.ReadInt();
@@ -112,6 +123,14 @@ namespace DevelopersHub.RealtimeNetworking.Server
                     _sceneManager.ChangeScene(newScene);
 
                     SendCurrentScene();
+                    break;
+
+                case PacketType.ShowYFrame:
+                    // Change current scene and return the new scene to client
+                    var show = packet.ReadBool();
+                    _yFrame.SetActive(show);
+
+                    SendShowYFrame();
                     break;
 
                 default:

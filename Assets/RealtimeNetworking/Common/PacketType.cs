@@ -4,5 +4,6 @@ namespace DevelopersHub.RealtimeNetworking.Common
         CsvWriterDataEntry = 1,
         Int = 2,
         ChangeScene = 3,
+        ShowYFrame = 4,
     }
 }

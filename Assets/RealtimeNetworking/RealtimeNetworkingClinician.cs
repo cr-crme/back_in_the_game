@@ -12,6 +12,7 @@ namespace DevelopersHub.RealtimeNetworking.Client{
         [SerializeField] TMP_Dropdown _sceneDropdown;
         [SerializeField] List<Transform> _objectsToMove;
         [SerializeField] CsvWriter _objectToSave;
+        [SerializeField] GameObject _yFrame;
 
         [SerializeField] TMP_InputField _serverIpAddressInput;
         [SerializeField] Button _connectButton;
@@ -116,6 +117,13 @@ namespace DevelopersHub.RealtimeNetworking.Client{
                     // Change current scene and return the new scene to client
                     var newScene = packet.ReadInt();
                     _sceneManager.ChangeScene(newScene);
+                    break;
+
+
+                case PacketType.ShowYFrame:
+                    // Change current scene and return the new scene to client
+                    var show = packet.ReadBool();
+                    _yFrame.SetActive(show);
                     break;
 
                 case PacketType.CsvWriterDataEntry:
