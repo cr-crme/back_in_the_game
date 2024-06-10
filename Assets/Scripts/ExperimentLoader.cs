@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
+using SimpleFileBrowser;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEditor;
@@ -106,10 +107,15 @@ public class ExperimentLoader : MonoBehaviour
     
     public void GetFileDialog()
     {
-        string path = EditorUtility.OpenFilePanel("Select Experiment File", "", "json");
-        if (path.Length == 0) return;
-
-        LoadExperiment(path);
+        FileBrowser.ShowLoadDialog(
+            (string[] paths) => LoadExperiment(paths[0]), 
+            () => { }, 
+            FileBrowser.PickMode.Files, 
+            true,
+            System.IO.Path.GetDirectoryName(Application.persistentDataPath), 
+            "*.json", 
+            "Ouvrir exp�rimentation"
+        );
     }
 
     void LoadExperiment(string path)
