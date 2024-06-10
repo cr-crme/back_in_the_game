@@ -153,7 +153,7 @@ public class ExperimentLoader : MonoBehaviour
         string trial = $"({_currentRound + 1}/{_experiment.rounds.Count})";
 
         if (_currentRound < 0) {
-            _saveNameText.text = $"D�but {trial}";
+            _saveNameText.text = $"Début {trial}";
             _previousButton.interactable = false;
         }
         if (_currentRound >= _experiment.rounds.Count) {
@@ -163,6 +163,7 @@ public class ExperimentLoader : MonoBehaviour
         if (_currentRound >= 0 && _currentRound < _experiment.rounds.Count) {
             _saveNameText.text = $"{_experiment.RoundToString(_currentRound)} {trial}";
             if (_experiment.rounds[_currentRound].mustRecord) _nextButton.interactable = false;
+            if (_experiment.rounds[_currentRound].recordingTime > 0) _csvWriter.AddListener(SetupAutomaticStop);
         }
 
         NotifyListeners();
@@ -173,7 +174,21 @@ public class ExperimentLoader : MonoBehaviour
         _nextButton.interactable = true;
     }
 
-    void NotifyListeners()
+    void SetupAutomaticStop(string filename)
+    {
+        if (_experiment.rounds[_currentRound].recordingTime > 0)
+        {
+            StartCoroutine(AutomaticStopCoroutine(_experiment.rounds[_currentRound].recordingTime));
+        }
+    }
+    System.Collections.IEnumerator AutomaticStopCoroutine(double waitingTime)
+    {
+        _csvWriter.PreventManualStopping();
+        yield return new WaitForSecondsRealtime((float)waitingTime);
+        _csvWriter.StopRecording();
+    }
+
+        void NotifyListeners()
     {
         ExperimentRound xp;
         string filename;
