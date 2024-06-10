@@ -139,6 +139,22 @@ namespace DevelopersHub.RealtimeNetworking.Common
             {
                 listener(_filePath);
             }
+
+            StartCoroutine(WriteCurrentRecordingTime);
+        }
+
+        System.Collections.IEnumerator WriteCurrentRecordingTime()
+        {
+            while (_isRecording)
+            {
+                _stopButton // TEXT = Time + 1
+            }
+        }
+
+            public void PreventManualStopping()
+        {
+            if (!_isRecording) return;
+            _stopButton.interactable = false;
         }
 
         public void StopRecording()
