@@ -18,11 +18,11 @@ public class ExperimentRound
 public class Experiment
 {
     public string experimentName;
-    public List<string>? sceneNames;
-    public List<string>? taskNames;
-    public List<ExperimentRound>? rounds;
+    public List<string> sceneNames;
+    public List<string> taskNames;
+    public List<ExperimentRound> rounds;
 
-    public string? IsValid()
+    public string IsValid()
     {
         if (experimentName == null || experimentName.Length == 0) return "Experiment name is missing";
         if (sceneNames == null) return "Scene names are missing";
@@ -60,12 +60,14 @@ public class Experiment
                 words[i] = System.Text.RegularExpressions.Regex.Replace(words[i], "[^a-zA-Z0-9]", "");
             }
 
+
             return string.Join(string.Empty, words);
         }
 
-
+        // Get the number of experiment value to get a decent padding in the name
         var round = rounds[index];
-        return $"{ToPascalCase(taskNames[round.task])}_{ToPascalCase(sceneNames[round.scene])}.csv";
+        int padding = rounds.Count.ToString().Length;
+        return $"{(index + 1).ToString().PadLeft(padding, '0')}_{ToPascalCase(taskNames[round.task])}_{ToPascalCase(sceneNames[round.scene])}.csv";
     }
 }
 
@@ -79,7 +81,7 @@ public class ExperimentLoader : MonoBehaviour
     [SerializeField] private Button _nextButton;
     [SerializeField] private Text _errorText;
 
-    public delegate void OnRoundChangedDelegate(int roundIndex, ExperimentRound? round, string filename);
+    public delegate void OnRoundChangedDelegate(int roundIndex, ExperimentRound round, string filename);
     private List<OnRoundChangedDelegate> _onRoundChanged = new List<OnRoundChangedDelegate>();
 
     public void AddListener(OnRoundChangedDelegate listener)
@@ -99,10 +101,6 @@ public class ExperimentLoader : MonoBehaviour
         _saveNameText.text = "No file selected";
         _nextButton.interactable = false;
         _errorText.text = "";
-
-        AddListener((index, round, filename) => {
-            Debug.Log($"Round {index}, {filename}");
-        });
     }
     
     public void GetFileDialog()
@@ -158,8 +156,8 @@ public class ExperimentLoader : MonoBehaviour
 
     void NotifyListeners()
     {
-        ExperimentRound? xp;
-        string? filename;
+        ExperimentRound xp;
+        string filename;
         if (_currentRound < 0 || _currentRound >= _experiment.rounds.Count) {
             xp = null;
             filename = null;

@@ -1,13 +1,28 @@
 {
     "experimentName": "Validation",
-    "sceneNames": ["Soccer_Field", "Hospital", "See-Through"],
+    "sceneNames": ["Bureau", "Soccer_Field", "Hospital", "See-Through"],
     "taskNames": ["Y-Task", "Vertical jump"],
     "rounds": [
         {"scene": 1, "task": 0},
         {"scene": 2, "task": 1},
-        {"scene": 0, "task": 1},
+        {"scene": 3, "task": 1},
         {"scene": 2, "task": 0},
         {"scene": 1, "task": 1},
-        {"scene": 0, "task": 0}
+        {"scene": 3, "task": 0},
+        {"scene": 2, "task": 1},
+        {"scene": 3, "task": 1},
+        {"scene": 2, "task": 0},
+        {"scene": 1, "task": 1},
+        {"scene": 3, "task": 0},
+        {"scene": 2, "task": 1},
+        {"scene": 3, "task": 1},
+        {"scene": 2, "task": 0},
+        {"scene": 1, "task": 1},
+        {"scene": 3, "task": 0},
+        {"scene": 2, "task": 1},
+        {"scene": 3, "task": 1},
+        {"scene": 2, "task": 0},
+        {"scene": 1, "task": 1},
+        {"scene": 3, "task": 0}
     ]
 }

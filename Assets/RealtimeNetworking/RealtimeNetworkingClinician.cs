@@ -8,22 +8,27 @@ namespace DevelopersHub.RealtimeNetworking.Client{
         
     public class RealtimeNetworkingClinician : MonoBehaviour
     {
-        [SerializeField] private SceneManager _sceneManager;
-        [SerializeField] private TMP_Dropdown _sceneDropdown;
-        [SerializeField] private List<Transform> _objectsToMove;
-        [SerializeField] private CsvWriter _objectToSave;
+        [SerializeField] SceneManager _sceneManager;
+        [SerializeField] TMP_Dropdown _sceneDropdown;
+        [SerializeField] List<Transform> _objectsToMove;
+        [SerializeField] CsvWriter _objectToSave;
 
-        [SerializeField] private TMP_InputField _serverIpAddressInput;
-        [SerializeField] private Button _connectButton;
-        [SerializeField] private Button _cancelConnectButton;
+        [SerializeField] TMP_InputField _serverIpAddressInput;
+        [SerializeField] Button _connectButton;
+        [SerializeField] Button _cancelConnectButton;
 
-        [SerializeField] private Canvas _connexionPanel;
-        [SerializeField] private Canvas _controlPanel;
+        [SerializeField] Canvas _connexionPanel;
+        [SerializeField] Canvas _controlPanel;
+        [SerializeField] Canvas _automaticEnvironmentPanel;
+        [SerializeField] Toggle _showAutomaticToggle;
 
-        private bool _isConnected = false;
-        private bool _isConnecting = false;
-        private bool _hasRequestedCancelConnexion = false;
-        private bool _connexionLost = false;
+        [SerializeField] ExperimentLoader _experimentLoader;
+        [SerializeField] TMP_InputField _savepathInputField;
+
+        bool _isConnected = false;
+        bool _isConnecting = false;
+        bool _hasRequestedCancelConnexion = false;
+        bool _connexionLost = false;
 
         // Start is called before the first frame update
         void Start()
@@ -41,7 +46,7 @@ namespace DevelopersHub.RealtimeNetworking.Client{
             ValidateIpAddress();
         }
 
-        private void OnApplicationQuit()
+        void OnApplicationQuit()
         {
             RealtimeNetworking.Disconnect();
         }
@@ -266,6 +271,30 @@ namespace DevelopersHub.RealtimeNetworking.Client{
             }
 
             _connectButton.interactable = true;
+        }
+
+        public void ToggleAutomaticEnvironment()
+        {
+            bool value = _showAutomaticToggle.isOn;
+            if (value)
+            {
+                _automaticEnvironmentPanel.gameObject.SetActive(true);
+                _sceneDropdown.interactable = false;
+                _experimentLoader.AddListener(OnExperimentRoundChanged);
+            } else
+            {
+                _experimentLoader.RemoveListener(OnExperimentRoundChanged);
+                _sceneDropdown.interactable = true;
+                _automaticEnvironmentPanel.gameObject.SetActive(false);
+            }
+        }
+
+        void OnExperimentRoundChanged(int roundIndex, ExperimentRound round, string filename) {
+            // The main fallback if anything goes wrong is the waiting room (0)
+            _sceneDropdown.value = round != null && (round.scene >= 0 || round.scene < _sceneDropdown.options.Count) ? round.scene : 0;
+            ChangeSceneRequest();
+    
+            _savepathInputField.text = filename == null ? "": filename;
         }
     }
 }
