@@ -13052,6 +13052,7 @@ RectTransform:
   - {fileID: 537545656}
   - {fileID: 1718975143}
   - {fileID: 160947889}
+  - {fileID: 1418368880}
   m_Father: {fileID: 1551908159}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -19093,6 +19094,7 @@ MonoBehaviour:
   _saveNameText: {fileID: 2902935522432218505}
   _nextButton: {fileID: 2902935522943174062}
   _errorText: {fileID: 2902935522665453963}
+  _csvWriter: {fileID: 472204097}
 --- !u!1 &1787564096
 GameObject:
   m_ObjectHideFlags: 0
