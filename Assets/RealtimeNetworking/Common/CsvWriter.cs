@@ -10,16 +10,17 @@ namespace DevelopersHub.RealtimeNetworking.Common
     
     public class CsvWriter : MonoBehaviour
     {
-        [SerializeField] private TMP_InputField _subjectNameInput;
-        [SerializeField] private TMP_InputField _trialNameInput;
-        [SerializeField] private Button _startButton;
-        [SerializeField] private Button _stopButton;
+        [SerializeField] TMP_InputField _subjectNameInput;
+        [SerializeField] TMP_InputField _trialNameInput;
+        [SerializeField] Button _startButton;
+        [SerializeField] Button _stopButton;
         [SerializeField] private List<string> _objectsNames;
+        [SerializeField] List<string> _objectsNames;
 
         public delegate void OnRecordingStartedDelegate(string filepath);
-        private List<OnRecordingStartedDelegate> _onRecordingStarted = new List<OnRecordingStartedDelegate>();
+        List<OnRecordingStartedDelegate> _onRecordingStarted = new List<OnRecordingStartedDelegate>();
         public delegate void OnRecordingStopedDelegate();
-        private List<OnRecordingStopedDelegate> _onRecordingStopped = new List<OnRecordingStopedDelegate>();
+        List<OnRecordingStopedDelegate> _onRecordingStopped = new List<OnRecordingStopedDelegate>();
 
         public void AddListener(OnRecordingStartedDelegate listener)
         {
@@ -41,13 +42,13 @@ namespace DevelopersHub.RealtimeNetworking.Common
         }
 
         string _filePath { get { return Path.Combine(Application.persistentDataPath, _subjectNameInput.text, $"{_trialNameInput.text}.csv"); } }
-        private StreamWriter _fileWriter;
+        StreamWriter _fileWriter;
         
-        private bool _isRecording = false;
-        private List<string> _dataQueue = new List<string>();
-        private int _frameCount = 0;
-        private const int _framesPerFlush = 100;
-        private readonly object _lock = new object(); 
+        bool _isRecording = false;
+        List<string> _dataQueue = new List<string>();
+        int _frameCount = 0;
+        const int _framesPerFlush = 100;
+        readonly object _lock = new object(); 
 
         public class PoseVectors
         {
@@ -156,7 +157,7 @@ namespace DevelopersHub.RealtimeNetworking.Common
             }
         }
 
-            public void PreventManualStopping()
+        public void PreventManualStopping()
         {
             if (!_isRecording) return;
             _stopButton.interactable = false;
@@ -210,7 +211,7 @@ namespace DevelopersHub.RealtimeNetworking.Common
             }
         }
 
-        private void FlushDataToFile()
+        void FlushDataToFile()
         {
             lock (_lock)
             {
