@@ -105,20 +105,25 @@ namespace DevelopersHub.RealtimeNetworking.Common
 
         public void ValidateDataPath()
         {
-            if (string.IsNullOrEmpty(_subjectNameInput.text) || string.IsNullOrEmpty(_trialNameInput.text))
-            {
-                _startButton.interactable = false;
-                return;
+            bool canRecord = true;
+            string buttonText = "Enregistrer";
+            
+            if (string.IsNullOrEmpty(_subjectNameInput.text)){
+                // Must enter a subject name
+                canRecord = false;
+                buttonText = "Entrer sujet";
+            } else if (string.IsNullOrEmpty(_trialNameInput.text)){
+                // Must enter a trial name
+                canRecord = false;
+                buttonText = "Entrer essai";
+            } else if (File.Exists(_filePath)) {
+                // Do not allow recording if the file already exists
+                canRecord = false;
+                buttonText = "Fichier existant";
             }
 
-            // Do not allow recording if the file already exists
-            if (File.Exists(_filePath))
-            {
-                _startButton.interactable = false;
-                return;
-            }
-
-            _startButton.interactable = true;
+            _startButton.interactable = canRecord;
+            _startButton.GetComponentInChildren<TMP_Text>().text = buttonText;
         }
 
         public void StartRecording()
