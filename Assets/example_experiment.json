@@ -4,7 +4,7 @@
     "taskNames": ["Y-balance", "Jump single", "Jump double", "Jump cross", "Balance right", "Balance left", "Balance tandem"],
     "rounds": [
         {"scene": 1, "task": 0, "showYFrame": true, "mustRecord": false},
-        {"scene": 2, "task": 1, "showYFrame": false, "recordingTime": 5.1},
+        {"scene": 2, "task": 1, "showYFrame": false, "mustRecord": true, "recordingTime": 5.1},
         {"scene": 3, "task": 1, "showYFrame": false},
         {"scene": 2, "task": 0, "showYFrame": true},
         {"scene": 1, "task": 1, "showYFrame": false},

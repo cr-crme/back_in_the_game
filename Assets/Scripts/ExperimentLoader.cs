@@ -78,7 +78,8 @@ public class Experiment
 
 public class ExperimentLoader : MonoBehaviour
 {
-    int _currentRound = -1;
+    int _currentRoundIndex = -1;
+    int _maxRoundIndex = -1;
     Experiment _experiment;
     [SerializeField] Button _previousButton;
     [SerializeField] Text _saveNameText;
@@ -126,7 +127,8 @@ public class ExperimentLoader : MonoBehaviour
 
     void LoadExperiment(string path)
     {
-        _currentRound = -1;
+        _currentRoundIndex = -1;
+        _maxRoundIndex = -1;
         _experiment = JsonUtility.FromJson<Experiment>(System.IO.File.ReadAllText(path));
 
         var error = _experiment.IsValid();
@@ -144,26 +146,31 @@ public class ExperimentLoader : MonoBehaviour
         }
     }
 
+    public ExperimentRound currentRound { get => _experiment.rounds[_currentRoundIndex]; }
+
     public void ChangeRound(int step)
     {
         _previousButton.interactable = true;
         _nextButton.interactable = true;
-        _currentRound += step;
+        _currentRoundIndex += step;
+        if (_maxRoundIndex < _currentRoundIndex) _maxRoundIndex = _currentRoundIndex;
 
-        string trial = $"({_currentRound + 1}/{_experiment.rounds.Count})";
+        string trial = $"({_currentRoundIndex + 1}/{_experiment.rounds.Count})";
 
-        if (_currentRound < 0) {
+        if (_currentRoundIndex < 0) {
             _saveNameText.text = $"Début {trial}";
             _previousButton.interactable = false;
         }
-        if (_currentRound >= _experiment.rounds.Count) {
+        if (_currentRoundIndex >= _experiment.rounds.Count) {
             _saveNameText.text = $"Fin";
             _nextButton.interactable = false;
         }
-        if (_currentRound >= 0 && _currentRound < _experiment.rounds.Count) {
-            _saveNameText.text = $"{_experiment.RoundToString(_currentRound)} {trial}";
-            if (_experiment.rounds[_currentRound].mustRecord) _nextButton.interactable = false;
-            if (_experiment.rounds[_currentRound].recordingTime > 0) _csvWriter.AddListener(SetupAutomaticStop);
+        if (_currentRoundIndex >= 0 && _currentRoundIndex < _experiment.rounds.Count) {
+            _saveNameText.text = $"{_experiment.RoundToString(_currentRoundIndex)} {trial}";
+            if (currentRound.mustRecord && _maxRoundIndex == _currentRoundIndex) {
+                _nextButton.interactable = false;
+            }
+            if (currentRound.recordingTime > 0) _csvWriter.AddListener(SetupAutomaticStop);
         }
 
         NotifyListeners();
@@ -176,9 +183,9 @@ public class ExperimentLoader : MonoBehaviour
 
     void SetupAutomaticStop(string filename)
     {
-        if (_experiment.rounds[_currentRound].recordingTime > 0)
+        if (currentRound.recordingTime > 0)
         {
-            StartCoroutine(AutomaticStopCoroutine(_experiment.rounds[_currentRound].recordingTime));
+            StartCoroutine(AutomaticStopCoroutine(currentRound.recordingTime));
         }
     }
     System.Collections.IEnumerator AutomaticStopCoroutine(double waitingTime)
@@ -192,16 +199,16 @@ public class ExperimentLoader : MonoBehaviour
     {
         ExperimentRound xp;
         string filename;
-        if (_currentRound < 0 || _currentRound >= _experiment.rounds.Count) {
+        if (_currentRoundIndex < 0 || _currentRoundIndex >= _experiment.rounds.Count) {
             xp = null;
             filename = null;
         } else {
-            xp = _experiment.rounds[_currentRound];
-            filename = _experiment.FileName(_currentRound);
+            xp = currentRound;
+            filename = _experiment.FileName(_currentRoundIndex);
         }
 
         foreach (var listener in _onRoundChanged){
-            listener(_currentRound, xp, filename);
+            listener(_currentRoundIndex, xp, filename);
         }
     }
 }

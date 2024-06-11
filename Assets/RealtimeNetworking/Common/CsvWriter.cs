@@ -14,8 +14,9 @@ namespace DevelopersHub.RealtimeNetworking.Common
         [SerializeField] TMP_InputField _trialNameInput;
         [SerializeField] Button _startButton;
         [SerializeField] Button _stopButton;
-        [SerializeField] private List<string> _objectsNames;
+        [SerializeField] TMP_Text _trialTimeText;
         [SerializeField] List<string> _objectsNames;
+        [SerializeField] ExperimentLoader _experimentLoader;
 
         public delegate void OnRecordingStartedDelegate(string filepath);
         List<OnRecordingStartedDelegate> _onRecordingStarted = new List<OnRecordingStartedDelegate>();
@@ -102,6 +103,10 @@ namespace DevelopersHub.RealtimeNetworking.Common
             _startButton.gameObject.SetActive(true);
             _stopButton.interactable = false;
             _stopButton.gameObject.SetActive(false);
+
+            _experimentLoader.AddListener(OnRoundChanged);
+
+            ValidateDataPath();
         }
 
         public void ValidateDataPath()
@@ -138,6 +143,7 @@ namespace DevelopersHub.RealtimeNetworking.Common
             _startButton.gameObject.SetActive(false);
             _stopButton.interactable = true;
             _stopButton.gameObject.SetActive(true);
+            _trialTimeText.gameObject.SetActive(true);
 
             _isRecording = true;
 
@@ -146,14 +152,22 @@ namespace DevelopersHub.RealtimeNetworking.Common
                 listener(_filePath);
             }
 
-            StartCoroutine(WriteCurrentRecordingTime);
+            StartCoroutine(WriteCurrentRecordingTime(_experimentLoader.currentRound.recordingTime));
         }
 
-        System.Collections.IEnumerator WriteCurrentRecordingTime()
+        System.Collections.IEnumerator WriteCurrentRecordingTime(double maxTime)
         {
+            var startTime = Time.time;
+            int i = 0;
+            
+            string suffix = maxTime > 0 ? $"/ {maxTime:F1} s" : "s";
             while (_isRecording)
             {
-                _stopButton // TEXT = Time + 1
+                var currentTime = Time.time - startTime;
+                _trialTimeText.text = $"{currentTime:F1} {suffix}";
+                
+                yield return new WaitForSeconds(0.1f - (currentTime % 0.1f));
+                i++;
             }
         }
 
@@ -161,6 +175,11 @@ namespace DevelopersHub.RealtimeNetworking.Common
         {
             if (!_isRecording) return;
             _stopButton.interactable = false;
+        }
+
+        void OnRoundChanged(int roundIndex, ExperimentRound round, string filename){
+            _trialTimeText.text = "";
+            _trialTimeText.gameObject.SetActive(false);
         }
 
         public void StopRecording()
