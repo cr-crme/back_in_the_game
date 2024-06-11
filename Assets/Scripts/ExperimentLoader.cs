@@ -28,14 +28,14 @@ public class Experiment
 
     public string IsValid()
     {
-        if (experimentName == null || experimentName.Length == 0) return "Nom de l'expérience manquant";
-        if (sceneNames == null) return "Noms des scènes manquants";
-        if (taskNames == null) return "Noms des tâches manquants";
+        if (experimentName == null || experimentName.Length == 0) return "Nom de l'exp\u00E9rience manquant";
+        if (sceneNames == null) return "Noms des sc\u00E8nes manquants";
+        if (taskNames == null) return "Noms des t\u00E2ches manquants";
 
         foreach (var round in rounds)
         {
-            if (round.scene < 0 || round.scene >= sceneNames.Count) return "Index d'une scène invalide";
-            if (round.task < 0 || round.task >= taskNames.Count) return "Index d'une tâche invalide";
+            if (round.scene < 0 || round.scene >= sceneNames.Count) return "Index d'une sc\u00E8ne invalide";
+            if (round.task < 0 || round.task >= taskNames.Count) return "Index d'une t\u00E2che invalide";
         }        
 
         return null;
@@ -105,7 +105,7 @@ public class ExperimentLoader : MonoBehaviour
     void Start()
     {
         _previousButton.interactable = false;
-        _saveNameText.text = "Aucun fichier s�lectionn�";
+        _saveNameText.text = "Aucun fichier s\u00E9lectionn\u00E9";
         _nextButton.interactable = false;
         _errorText.text = "";
 
@@ -139,7 +139,7 @@ public class ExperimentLoader : MonoBehaviour
         } else {
             // Reset to initial state
             _previousButton.interactable = false;
-            _saveNameText.text = "Aucun fichier s�lectionn�";
+            _saveNameText.text = "Aucun fichier s\u00E9lectionn\u00E9";
             _nextButton.interactable = false;
             _errorText.text = error;
             _experiment = null;
@@ -158,7 +158,7 @@ public class ExperimentLoader : MonoBehaviour
         string trial = $"({_currentRoundIndex + 1}/{_experiment.rounds.Count})";
 
         if (_currentRoundIndex < 0) {
-            _saveNameText.text = $"Début {trial}";
+            _saveNameText.text = $"D\u00E9but {trial}";
             _previousButton.interactable = false;
         }
         if (_currentRoundIndex >= _experiment.rounds.Count) {
