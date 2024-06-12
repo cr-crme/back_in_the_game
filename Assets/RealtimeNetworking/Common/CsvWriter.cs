@@ -12,6 +12,7 @@ namespace DevelopersHub.RealtimeNetworking.Common
     {
         [SerializeField] TMP_InputField _subjectNameInput;
         [SerializeField] TMP_InputField _trialNameInput;
+        [SerializeField] TMP_Text _folderPath;
         [SerializeField] Button _startButton;
         [SerializeField] Button _stopButton;
         [SerializeField] TMP_Text _trialTimeText;
@@ -42,7 +43,9 @@ namespace DevelopersHub.RealtimeNetworking.Common
             _onRecordingStopped.Remove(listener);
         }
 
-        string _filePath { get { return Path.Combine(Application.persistentDataPath, _subjectNameInput.text, $"{_trialNameInput.text}.csv"); } }
+        string _filePath { 
+            get => Path.Combine(Application.persistentDataPath, _subjectNameInput.text, $"{_trialNameInput.text}.csv"); 
+        }
         StreamWriter _fileWriter;
         
         bool _isRecording = false;
@@ -105,6 +108,8 @@ namespace DevelopersHub.RealtimeNetworking.Common
             _stopButton.gameObject.SetActive(false);
 
             _experimentLoader.AddListener(OnRoundChanged);
+
+            _folderPath.text = Application.persistentDataPath;
 
             ValidateDataPath();
         }
