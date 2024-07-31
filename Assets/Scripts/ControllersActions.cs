@@ -6,9 +6,8 @@ using UnityEngine.XR;
 
 public class ControllersActions : MonoBehaviour
 {
-
-    protected bool m_isSetup = false;
-    protected bool m_connectBodyTracker = false;
+    private bool m_isSetup = false;
+    private bool m_connectBodyTracker = false;
 
     public InputDevice head { get; protected set; }
     public InputDevice leftHand { get; protected set; }
@@ -36,7 +35,7 @@ public class ControllersActions : MonoBehaviour
     {
         // Try to setup again if not setup
         if (!m_isSetup) { 
-            SetupXRNodes(); 
+            SetupXRNodes();
             return; 
         }
 
@@ -45,7 +44,7 @@ public class ControllersActions : MonoBehaviour
         // leftHand.TryGetFeatureValue(CommonUsages.deviceRotation, out Quaternion rotation);
         // Debug.Log(position);
         // Debug.Log(rotation.eulerAngles);
-        
+
         //// Get the triggers button
         //rightHand.TryGetFeatureValue(CommonUsages.triggerButton, out bool isRightTriggered);
         //if (isRightTriggered)
@@ -66,7 +65,6 @@ public class ControllersActions : MonoBehaviour
             PXR_Input.GetBodyTrackingPose(0, ref _bodyTracker);
             bodyTracker = _bodyTracker;
         }
-        
 
     }
 
