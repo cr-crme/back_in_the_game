@@ -1,0 +1,6 @@
+# create a dev conda environment with: `make create_env` or `conda env create -f environment.yml`
+name: back_in_the_game
+channels:
+- conda-forge
+dependencies:
+- pip
