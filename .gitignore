@@ -81,3 +81,7 @@ Assets/Brick Project Studio/
 
 Assets/Plugins/SimpleFileBrowser/
 SDKs/*/
+
+Analyses/.vscode/launch.json
+
+Analyses/runner/metrics.xlsx

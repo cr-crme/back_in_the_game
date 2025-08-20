@@ -11,8 +11,11 @@
             "program": "${workspaceFolder}/runner/main.py",
             "console": "integratedTerminal",
             "justMyCode": true,
-            "env": { "PYTHONPATH": "${workspaceFolder}" },
-            "cwd": "${workspaceFolder}/runner/"
+            "env": { 
+                "PYTHONPATH": "${workspaceFolder}", 
+                "DATA_PATH": "<PUT_YOUR_DATA_PATH_HERE>",
+            },
+            "cwd": "${workspaceFolder}/runner/",
         },
     ]
 }

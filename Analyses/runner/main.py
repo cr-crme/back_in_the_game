@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 
 from back_in_the_game_analyses import (
@@ -16,7 +17,8 @@ _show_graphs = False
 
 
 def main():
-    data_folder = "C:/Users/pariterre/Nextcloud/ShareFolder/MarieLyneNault/BackInTheGame/Nouveau protocole (2025)/"
+    # Get the data folder from the DATA_PATH environment variable
+    data_folder = os.getenv("DATA_PATH")
     subjects = ["orthovr" + str(i) for i in range(1, 16)]
     all_metrics = []
 
