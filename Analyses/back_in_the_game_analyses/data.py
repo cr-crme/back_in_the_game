@@ -3,7 +3,7 @@ import numpy as np
 from pathlib import Path
 import pandas as pd
 
-from .maths import central_derivative, fit_confidence_ellipse
+from .maths import central_derivative
 
 
 class DataAxis(Enum):
@@ -18,6 +18,7 @@ class DataAxis(Enum):
 
 
 class DataTag(Enum):
+    FRAME = "Frame"
     HEAD_POSITION = ["Head_Pos.X", "Head_Pos.Y", "Head_Pos.Z"]
     HEAD_ROTATION = ["Head_Rot.X", "Head_Rot.Y", "Head_Rot.Z"]
     LEFT_HAND_POSITION = ["LeftHand_Pos.X", "LeftHand_Pos.Y", "LeftHand_Pos.Z"]
@@ -49,7 +50,7 @@ class Data:
     @property
     def time(self) -> pd.Series:
         """Returns the time in seconds since the start of the recording."""
-        return self._df["Frame"] - self._df["Frame"].min()
+        return self._df[DataTag.FRAME.value] - self._df[DataTag.FRAME.value].min()
 
     def get(
         self, tag: DataTag, t: slice = slice(None), data_type: DataType = DataType.VALUE, axis: DataAxis = DataAxis.ALL
@@ -69,31 +70,3 @@ class Data:
             return acceleration.iloc[t, axis.value]
 
         raise ValueError(f"Unsupported data type: {data_type}")
-
-    def horizontal_dispersion(self, tag: DataTag, t: slice = slice(None)) -> np.float64:
-        """Returns the horizontal dispersion (2D) of the specified tag."""
-        position = self.get(tag=tag, t=t, data_type=DataType.VALUE, axis=DataAxis.HORIZONTAL)
-        ellipse_params = fit_confidence_ellipse(position, confidence=0.95)
-
-        # Return the area of the ellipse as a measure of dispersion (π * a * b)
-        return (ellipse_params["a"] * ellipse_params["b"] * np.pi).values[0]
-
-    def displacement(self, tag: DataTag, t: slice = slice(None), axis: DataAxis = DataAxis.ALL) -> np.float64:
-        """Returns the displacement of the specified tag."""
-        if len(axis.value) > 1:
-            raise ValueError("Displacement can only be computed for a single axis.")
-        position = self.get(tag=tag, t=t, data_type=DataType.VALUE, axis=axis)
-        return position.max() - position.min()
-
-    def acceleration_peak(self, tag: DataTag, t: slice = slice(None), axis: DataAxis = DataAxis.ALL) -> np.float64:
-        """Returns the peak acceleration of the specified tag."""
-        acceleration = self.get(tag=tag, t=t, data_type=DataType.ACCELERATION, axis=axis)
-        acceleration = np.sqrt((acceleration**2).sum(axis=1))
-        return acceleration.max()
-
-    def traveled_distance(self, tag: DataTag, t: slice = slice(None)) -> np.float64:
-        """Returns the total traveled distance of the specified tag."""
-        position = self.get(tag=tag, t=t, data_type=DataType.VALUE, axis=DataAxis.ALL)
-        diffs = position.diff().fillna(0)
-        distances = np.sqrt((diffs**2).sum(axis=1))
-        return (distances.cumsum()).values[-1]

@@ -5,6 +5,7 @@ requires = [
     "pandas",
     "scipy",
     "matplotlib",
+    "openpyxl",
 ]
 build-backend = "setuptools.build_meta"
 
@@ -26,6 +27,7 @@ dependencies = [
     "pandas",
     "scipy",
     "matplotlib",
+    "openpyxl"
 ]
 
 [project.optional-dependencies]

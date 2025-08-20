@@ -3,6 +3,23 @@ import pandas as pd
 from scipy.stats import chi2
 
 
+def compute_norm(df: pd.DataFrame) -> np.float64:
+    """
+    Compute the Euclidean distance between two points.
+
+    Parameters
+    ----------
+    df : pd.DataFrame
+        DataFrame containing the coordinates of the points.
+
+    Returns
+    -------
+    float
+        Euclidean distance between the two points.
+    """
+    return np.sqrt((df**2).sum())
+
+
 def central_derivative(df: pd.DataFrame, time: pd.Series, window: int) -> pd.DataFrame:
     """
     Compute the central finite difference derivative of a DataFrame
