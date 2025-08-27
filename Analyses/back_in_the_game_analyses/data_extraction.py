@@ -33,6 +33,53 @@ class DataMetrics(Enum):
     POST_JUMP_RIGHT_HAND_TRAVELED_DISTANCE = "Post-jump right hand traveled distance"
     JUMP_INDICES = "Jump indices"
 
+    @property
+    def description(self) -> str:
+        if self == DataMetrics.OVERALL_HEAD_HORIZONTAL_DISPERSION:
+            return (
+                "The area (m²) of an optimal ellipse covering 95% of the projection on the floor of the head positions"
+            )
+        elif self == DataMetrics.OVERALL_LEFT_HAND_ACCELERATION_PEAK:
+            return "The peak acceleration (m/s²) of the left hand"
+        elif self == DataMetrics.OVERALL_RIGHT_HAND_ACCELERATION_PEAK:
+            return "The peak acceleration (m/s²) of the right hand"
+        elif self == DataMetrics.OVERALL_LEFT_HAND_TRAVELED_DISTANCE:
+            return "The traveled distance (m) of the left hand"
+        elif self == DataMetrics.OVERALL_RIGHT_HAND_TRAVELED_DISTANCE:
+            return "The traveled distance (m) of the right hand"
+        elif self == DataMetrics.SQUAT_HEIGHT:
+            return "The squat height (m) of the subject based on the difference of the head vertical positions at start of squat and lowest point"
+        elif self == DataMetrics.JUMP_HEIGHT:
+            return "The jump height (m) of the subject based on the difference of the head vertical positions at take-off and highest point"
+        elif self == DataMetrics.JUMP_DISTANCE:
+            return "The horizontal jump distance (m) of the subject based on the difference of the head horizontal positions at take-off and reception"
+        elif self == DataMetrics.JUMP_FLIGHT_TIME:
+            return "The jump flight time (s) of the subject based on the time spent in the air (i.e. between take-off and landing)"
+        elif self == DataMetrics.PRE_JUMP_HEAD_HORIZONTAL_DISPERSION:
+            return "The area (m²) of an optimal ellipse covering 95% of the projection on the floor of the head positions before take-off"
+        elif self == DataMetrics.PRE_JUMP_LEFT_HAND_ACCELERATION_PEAK:
+            return "The peak acceleration (m/s²) of the left hand before take-off"
+        elif self == DataMetrics.PRE_JUMP_RIGHT_HAND_ACCELERATION_PEAK:
+            return "The peak acceleration (m/s²) of the right hand before take-off"
+        elif self == DataMetrics.PRE_JUMP_LEFT_HAND_TRAVELED_DISTANCE:
+            return "The traveled distance (m) of the left hand before take-off"
+        elif self == DataMetrics.PRE_JUMP_RIGHT_HAND_TRAVELED_DISTANCE:
+            return "The traveled distance (m) of the right hand before take-off"
+        elif self == DataMetrics.POST_JUMP_HEAD_HORIZONTAL_DISPERSION:
+            return "The area (m²) of an optimal ellipse covering 95% of the projection on the floor of the head positions after landing"
+        elif self == DataMetrics.POST_JUMP_LEFT_HAND_ACCELERATION_PEAK:
+            return "The peak acceleration (m/s²) of the left hand after landing"
+        elif self == DataMetrics.POST_JUMP_RIGHT_HAND_ACCELERATION_PEAK:
+            return "The peak acceleration (m/s²) of the right hand after landing"
+        elif self == DataMetrics.POST_JUMP_LEFT_HAND_TRAVELED_DISTANCE:
+            return "The traveled distance (m) of the left hand after landing"
+        elif self == DataMetrics.POST_JUMP_RIGHT_HAND_TRAVELED_DISTANCE:
+            return "The traveled distance (m) of the right hand after landing"
+        elif self == DataMetrics.JUMP_INDICES:
+            return "The indices of the different events detected during the jump (squat start, squat deepest point, squat end, toe-off, highest point, reception)"
+        else:
+            raise ValueError("Unknown DataMetric")
+
 
 class DataIndicesExtraction(Enum):
     SQUAT_START = "squat_start"

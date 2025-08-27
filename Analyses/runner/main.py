@@ -66,10 +66,12 @@ def main():
 
     # Write the excel file from all_metrics
     header = ["Subject", "File"]
+    header_description = []
     for metric in DataMetrics:
         if metric == DataMetrics.JUMP_INDICES:
             continue
         header.append(metric.value)
+        header_description.append([metric.value, metric.description])
 
     # Write the data to an Excel file
     data = []
@@ -80,8 +82,14 @@ def main():
                 continue
             row.append(metrics[metric])
         data.append(row)
+
+    writer = pd.ExcelWriter("metrics.xlsx")
     df = pd.DataFrame(data, columns=header)
-    df.to_excel("metrics.xlsx", index=False)
+    df.to_excel(writer, index=False, sheet_name="Metrics")
+
+    df = pd.DataFrame(header_description, columns=["Header", "Description"])
+    df.to_excel(writer, index=False, sheet_name="Description")
+    writer.close()
 
 
 if __name__ == "__main__":
